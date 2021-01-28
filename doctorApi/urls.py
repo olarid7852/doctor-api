@@ -20,7 +20,10 @@ from .swagger import urlpatterns as swagger_urlpatterns
 
 api_patterns = [
     path('rest-auth/', include('rest_auth.urls')),
-    path('docs/', include(swagger_urlpatterns))
+    path('rest-auth/registration/', include('rest_auth.registration.urls')),
+    path('docs/', include(swagger_urlpatterns)),
+    path('doctor/', include('doctor.urls')),
+    path('patient/', include('patient.urls')),
 ]
 urlpatterns = [
     path('admin/', admin.site.urls),

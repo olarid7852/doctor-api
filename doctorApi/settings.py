@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,9 +24,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'ig3+w2l@f8*2(j05&%o2_d%q+ee)*7tkp_@$f!v4ftisoh&46t'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = not bool(os.environ.get('production', False))
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '*'
+]
 
 
 # Application definition
@@ -37,10 +40,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'rest_framework',
     'rest_framework.authtoken',
     'rest_auth',
     'drf_yasg',
+    'allauth',
+    'allauth.account',
+    'rest_auth.registration',
+    'user',
+    'doctor',
+    'patient',
 ]
 
 MIDDLEWARE = [
@@ -79,8 +89,12 @@ WSGI_APPLICATION = 'doctorApi.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': os.environ.get('dbEngine', 'django.db.backends.sqlite3'),
+        'NAME': os.environ.get('dbName', BASE_DIR / 'db.sqlite3',),
+        'USER': os.environ.get('dbUser', 'postgres'),
+        'PASSWORD': os.environ.get('dbPass', 'postgres'),
+        'HOST': os.environ.get('dbHost', 'localhost'),
+        'PORT': 5432 #os.environ.get('dbPort', '5432'),
     }
 }
 
@@ -123,8 +137,18 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# ALLAUTH SETTINGS
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+
 # REST FRAMEWORK SETTINGSs
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10
 }
+
+REST_AUTH_REGISTER_SERIALIZERS = {
+    'REGISTER_SERIALIZER': 'user.serializers.RegisterSerializer'
+}
+
+# SITE SETTINGS
+SITE_ID = 1

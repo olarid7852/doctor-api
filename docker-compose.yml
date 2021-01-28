@@ -1,0 +1,35 @@
+version: '3'
+  
+services:
+  db:
+    container_name: doctor-db
+    image: postgres
+    hostname: postgres
+    expose:
+      - "5432"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgresql-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+  web:
+    container_name: doctor-web
+    build: .
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8001"
+    volumes:
+      - .:/code
+    ports:
+      - "8001:8001"
+    depends_on:
+      - db
+    environment:
+      - dbEngine=django.db.backends.postgresql
+      - dbName=postgres
+      - dbUser=postgres
+      - dbPassword=postgres
+      - dbHost=postgres
+      - dbPort=5432,
+      - production=true
+volumes:
+   postgresql-data:
